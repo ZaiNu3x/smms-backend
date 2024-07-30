@@ -1,4 +1,4 @@
-package group.intelliboys.smms_backend.configs;
+package group.intelliboys.smms_backend.configs.security;
 
 import group.intelliboys.smms_backend.exceptions.EmailNotFoundException;
 import group.intelliboys.smms_backend.models.dtos.UserAuthInfo;

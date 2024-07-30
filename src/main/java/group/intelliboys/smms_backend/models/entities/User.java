@@ -6,8 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -17,6 +19,7 @@ import java.time.LocalDateTime;
 @Table(name = "user")
 public class User {
     @Id
+    @Column(length = 64)
     private String email;
 
     @Column(nullable = false, length = 72)
@@ -25,6 +28,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
     private Role role;
+
+    private boolean is2faEnabled;
 
     @Column(nullable = false, length = 32)
     private String lastName;
@@ -49,6 +54,10 @@ public class User {
 
     @Column(length = 4096)
     private byte[] profilePic;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY,
+            cascade = CascadeType.REMOVE)
+    private List<Token> tokens;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

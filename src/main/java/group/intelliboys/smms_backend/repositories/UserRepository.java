@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
 
-    @Query("SELECT new group.intelliboys.smms_backend.models.dtos.UserAuthInfo (u.email, u.password, u.role) FROM User u WHERE u.email = ?1")
+    @Query("SELECT new group.intelliboys.smms_backend.models.dtos.UserAuthInfo (u.email, u.password, u.role, u.is2faEnabled) FROM User u WHERE u.email = ?1")
     Optional<UserAuthInfo> getUserAuthInfoByEmail(String email);
 
     @Modifying
