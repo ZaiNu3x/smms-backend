@@ -1,4 +1,4 @@
-package group.intelliboys.smms_backend.configs;
+package group.intelliboys.smms_backend.configs.security;
 
 import group.intelliboys.smms_backend.exceptions.EmailNotFoundException;
 import group.intelliboys.smms_backend.models.dtos.UserAuthInfo;
@@ -19,10 +19,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws EmailNotFoundException {
         UserAuthInfo userAuthInfo = userService.getUserAuthInfoByEmail(username);
 
-        return User.builder()
-                .username(userAuthInfo.getEmail())
-                .password(userAuthInfo.getPassword())
-                .authorities(new SimpleGrantedAuthority(userAuthInfo.getRole().name()))
-                .build();
+        if (userAuthInfo != null) {
+            return User.builder()
+                    .username(userAuthInfo.getEmail())
+                    .password(userAuthInfo.getPassword())
+                    .authorities(new SimpleGrantedAuthority(userAuthInfo.getRole().name()))
+                    .build();
+        } else throw new EmailNotFoundException(username + " was not found!");
     }
 }

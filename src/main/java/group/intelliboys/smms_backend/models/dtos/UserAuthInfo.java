@@ -14,4 +14,5 @@ public class UserAuthInfo {
     private String email;
     private String password;
     private Role role;
+    private boolean is2faEnabled;
 }

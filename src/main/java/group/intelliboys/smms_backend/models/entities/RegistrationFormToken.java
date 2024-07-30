@@ -9,18 +9,20 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "user")
-public class User {
+@Table(name = "registration_form_token",
+        indexes = {@Index(name = "idx_email", columnList = "email")})
+public class RegistrationFormToken {
     @Id
-    @Column(length = 64)
+    @Column(length = 36)
+    private String id;
+
+    @Column(nullable = false, length = 64)
     private String email;
 
     @Column(nullable = false, length = 72)
@@ -29,9 +31,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
     private Role role;
-
-    @Column(nullable = false, length = 13)
-    private String phoneNumber;
 
     private boolean is2faEnabled;
 
@@ -59,12 +58,17 @@ public class User {
     @Column(length = 2_048_000)
     private byte[] profilePic;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY,
-            cascade = CascadeType.REMOVE)
-    private List<Token> tokens;
+    @Column(nullable = false, length = 13)
+    private String phoneNumber;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<TwoFactorAuthToken> twoFactorAuthTokens;
+    @Column(nullable = false, length = 72)
+    private String hashedEmailVerificationOtp;
+
+    @Column(nullable = false, length = 72)
+    private String hashedSmsVerificationOtp;
+
+    @Column(nullable = false)
+    private boolean isVerified;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -74,7 +78,6 @@ public class User {
 
     @PrePersist
     protected void onCreate() {
-        age = (byte) Period.between(birthDate, LocalDate.now()).getYears();
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
     }
