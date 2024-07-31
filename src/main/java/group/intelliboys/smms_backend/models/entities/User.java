@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -58,7 +57,10 @@ public class User {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY,
             cascade = CascadeType.REMOVE)
-    private List<Token> tokens = new ArrayList<>();
+    private List<Token> tokens;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<TwoFactorAuthToken> twoFactorAuthTokens;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -66,13 +68,13 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    @PostPersist
+    @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
     }
 
-    @PostUpdate
+    @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }

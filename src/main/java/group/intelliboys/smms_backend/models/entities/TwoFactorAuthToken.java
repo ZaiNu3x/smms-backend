@@ -13,20 +13,29 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "token")
-public class Token {
+@Table(name = "two_factor_auth_token")
+public class TwoFactorAuthToken {
     @Id
-    @Column(length = 512)
-    private String value;
+    @Column(length = 36)
+    private String formId;
+
+    @Column(nullable = false, length = 72)
+    private String hashedEmailOtp;
+
+    @Column(nullable = false, length = 72)
+    private String hashedSmsOtp;
 
     @Column(nullable = false, length = 32)
     private String deviceId;
 
-    @Column(nullable = false, length = 32)
+    @Column(nullable = false, length = 16)
     private String deviceName;
 
+    @Column(nullable = false, length = 10)
+    private String status;
+
     @Column(nullable = false)
-    private boolean isBlacklisted;
+    private byte attempts;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -35,16 +44,17 @@ public class Token {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime expiresAt;
-
-    public boolean isExpired() {
-        return expiresAt.isBefore(LocalDateTime.now());
-    }
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
 
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
-        expiresAt = LocalDateTime.now().plusHours(1);
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 }

@@ -31,6 +31,7 @@ public class WebSecurityConfig {
                 // ============================ LOGIN URL'S ============================
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(HttpMethod.POST,"/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/login/2fa/verify").permitAll()
                 // =====================================================================
                         .anyRequest()
                         .authenticated())

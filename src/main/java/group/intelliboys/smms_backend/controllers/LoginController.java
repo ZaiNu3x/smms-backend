@@ -1,7 +1,9 @@
 package group.intelliboys.smms_backend.controllers;
 
 import group.intelliboys.smms_backend.models.forms.LoginForm;
-import group.intelliboys.smms_backend.models.responses.LoginResponse;
+import group.intelliboys.smms_backend.models.results.LoginResult;
+import group.intelliboys.smms_backend.models.results.TwoFAVerificationResult;
+import group.intelliboys.smms_backend.models.tokens.TwoFAVerificationToken;
 import group.intelliboys.smms_backend.services.LoginService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +21,14 @@ public class LoginController {
     private LoginService loginService;
 
     @PostMapping("")
-    public ResponseEntity<LoginResponse> doLogin(@RequestBody @Valid LoginForm loginForm) {
-        LoginResponse loginResponse = loginService.doLogin(loginForm);
-        return new ResponseEntity<>(loginResponse, HttpStatus.OK);
+    public ResponseEntity<LoginResult> doLogin(@RequestBody @Valid LoginForm loginForm) {
+        LoginResult loginResult = loginService.doLogin(loginForm);
+        return new ResponseEntity<>(loginResult, HttpStatus.OK);
+    }
+
+    @PostMapping("/2fa/verify")
+    public ResponseEntity<TwoFAVerificationResult> do2faVerification(@RequestBody @Valid TwoFAVerificationToken twoFAVerificationToken) {
+        TwoFAVerificationResult twoFAVerificationResult = loginService.doVerify(twoFAVerificationToken);
+        return new ResponseEntity<>(twoFAVerificationResult, HttpStatus.OK);
     }
 }

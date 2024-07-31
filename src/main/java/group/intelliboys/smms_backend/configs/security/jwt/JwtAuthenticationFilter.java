@@ -1,5 +1,6 @@
 package group.intelliboys.smms_backend.configs.security.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import group.intelliboys.smms_backend.configs.security.UserDetailsServiceImpl;
 import group.intelliboys.smms_backend.models.entities.Token;
 import group.intelliboys.smms_backend.services.TokenService;
@@ -16,6 +17,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 @Component
@@ -57,6 +61,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
+        } else {
+            response.setContentType("application/json");
+            PrintWriter writer = response.getWriter();
+            Map<String, String> jsonObject = new HashMap<>();
+            jsonObject.put("status", "INVALID_TOKEN");
+            jsonObject.put("message", "Token is either Expired, Blacklisted or Invalid!");
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonString = objectMapper.writeValueAsString(jsonObject);
+
+            writer.print(jsonString);
+            writer.flush();
+            writer.close();
         }
 
         filterChain.doFilter(request, response);
