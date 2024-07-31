@@ -37,9 +37,13 @@ public class Token {
     @Column(nullable = false, updatable = false)
     private LocalDateTime expiresAt;
 
-    @PostPersist
+    public boolean isExpired() {
+        return expiresAt.isBefore(LocalDateTime.now());
+    }
+
+    @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
-        expiresAt = LocalDateTime.now().plusDays(7);
+        expiresAt = LocalDateTime.now().plusHours(1);
     }
 }

@@ -17,4 +17,6 @@ public interface UserRepository extends JpaRepository<User, String> {
     @Modifying
     @Query("UPDATE User u SET u.password = ?1 WHERE u.email = ?2")
     void updatePassword(String newHashedPassword, String email);
+
+    User getReferenceByEmail(String email);
 }

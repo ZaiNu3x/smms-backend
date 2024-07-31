@@ -1,7 +1,7 @@
 package group.intelliboys.smms_backend.services;
 
-import group.intelliboys.smms_backend.exceptions.EmailNotFoundException;
 import group.intelliboys.smms_backend.models.dtos.UserAuthInfo;
+import group.intelliboys.smms_backend.models.entities.User;
 import group.intelliboys.smms_backend.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +15,10 @@ public class UserService {
 
     public UserAuthInfo getUserAuthInfoByEmail(String email) {
         return userRepository.getUserAuthInfoByEmail(email)
-                .orElseThrow(() -> new EmailNotFoundException(email + " was not found!"));
+                .orElse(null);
+    }
+
+    public User getUserReferenceByEmail(String email) {
+        return userRepository.getReferenceByEmail(email);
     }
 }

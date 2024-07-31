@@ -8,7 +8,10 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -27,16 +30,35 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
+        String deviceId = request.getHeader("Device-ID");
+        String deviceName = request.getHeader("Device-Name");
 
         if (authHeader == null || SecurityContextHolder.getContext().getAuthentication() != null) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String token = Objects.requireNonNull(authHeader).substring(7);
+        String jwt = Objects.requireNonNull(authHeader).substring(7);
+        Token fetchedToken = tokenService.getTokenByValue(jwt);
 
-        Token fetchedToken = tokenService.getTokenByValue(token);
+        if (!fetchedToken.isExpired() && !fetchedToken.isBlacklisted() &&
+                fetchedToken.getDeviceId().equals(deviceId) && fetchedToken.getDeviceName().equals(deviceName)) {
 
-        logger.info(fetchedToken.toString());
+            String username = jwtService.extractUsername(fetchedToken.getValue());
+
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+                if (jwtService.isValid(jwt, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails.getUsername(),
+                            userDetails.getPassword(), userDetails.getAuthorities());
+
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
+            }
+        }
+
+        filterChain.doFilter(request, response);
     }
 }

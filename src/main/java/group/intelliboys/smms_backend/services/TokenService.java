@@ -17,4 +17,8 @@ public class TokenService {
         return tokenRepository.findByValue(value)
                 .orElseThrow(() -> new TokenNotFoundException(value + "was not found!"));
     }
+
+    public void saveToken(Token token) {
+        tokenRepository.save(token);
+    }
 }

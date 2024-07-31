@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -57,7 +58,7 @@ public class User {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY,
             cascade = CascadeType.REMOVE)
-    private List<Token> tokens;
+    private List<Token> tokens = new ArrayList<>();
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
