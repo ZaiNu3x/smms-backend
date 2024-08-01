@@ -22,4 +22,10 @@ public interface TwoFactorAuthTokenRepository extends JpaRepository<TwoFactorAut
     @Modifying
     @Query("UPDATE TwoFactorAuthToken t SET t.status = ?1 WHERE formId = ?2")
     void updateStatusByFormId(String newStatus, String formId);
+
+    @Modifying
+    @Query("UPDATE TwoFactorAuthToken t SET t.attempts = 0 WHERE formId = ?1")
+    void resetAttempts(String formId);
+
+    boolean existsByFormId(String formId);
 }

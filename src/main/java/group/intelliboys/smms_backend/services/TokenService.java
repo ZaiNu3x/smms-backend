@@ -1,6 +1,5 @@
 package group.intelliboys.smms_backend.services;
 
-import group.intelliboys.smms_backend.exceptions.TokenNotFoundException;
 import group.intelliboys.smms_backend.models.entities.Token;
 import group.intelliboys.smms_backend.repositories.TokenRepository;
 import jakarta.transaction.Transactional;
@@ -15,7 +14,7 @@ public class TokenService {
 
     public Token getTokenByValue(String value) {
         return tokenRepository.findByValue(value)
-                .orElseThrow(() -> new TokenNotFoundException(value + "was not found!"));
+                .orElse(null);
     }
 
     public void saveToken(Token token) {

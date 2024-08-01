@@ -8,6 +8,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,7 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private TokenService tokenService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
         String deviceId = request.getHeader("Device-ID");
         String deviceName = request.getHeader("Device-Name");
@@ -45,28 +46,43 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String jwt = Objects.requireNonNull(authHeader).substring(7);
         Token fetchedToken = tokenService.getTokenByValue(jwt);
 
-        if (!fetchedToken.isExpired() && !fetchedToken.isBlacklisted() &&
-                fetchedToken.getDeviceId().equals(deviceId) && fetchedToken.getDeviceName().equals(deviceName)) {
+        if (fetchedToken != null) {
+            if (!fetchedToken.isExpired() && !fetchedToken.isBlacklisted() &&
+                    fetchedToken.getDeviceId().equals(deviceId) && fetchedToken.getDeviceName().equals(deviceName)) {
 
-            String username = jwtService.extractUsername(fetchedToken.getValue());
+                String username = jwtService.extractUsername(fetchedToken.getValue());
 
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-                if (jwtService.isValid(jwt, userDetails)) {
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails.getUsername(),
-                            userDetails.getPassword(), userDetails.getAuthorities());
+                    if (jwtService.isValid(jwt, userDetails)) {
+                        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails.getUsername(),
+                                userDetails.getPassword(), userDetails.getAuthorities());
 
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authToken);
+                    }
                 }
+            } else {
+                response.setContentType("application/json");
+                PrintWriter writer = response.getWriter();
+                Map<String, String> jsonObject = new HashMap<>();
+                jsonObject.put("status", "INVALID_TOKEN");
+                jsonObject.put("message", "Token is either Expired, Blacklisted or Invalid!");
+
+                ObjectMapper objectMapper = new ObjectMapper();
+                String jsonString = objectMapper.writeValueAsString(jsonObject);
+
+                writer.print(jsonString);
+                writer.flush();
+                writer.close();
             }
         } else {
             response.setContentType("application/json");
             PrintWriter writer = response.getWriter();
             Map<String, String> jsonObject = new HashMap<>();
-            jsonObject.put("status", "INVALID_TOKEN");
-            jsonObject.put("message", "Token is either Expired, Blacklisted or Invalid!");
+            jsonObject.put("status", "TOKEN_NOT_FOUND");
+            jsonObject.put("message", "Token not found!");
 
             ObjectMapper objectMapper = new ObjectMapper();
             String jsonString = objectMapper.writeValueAsString(jsonObject);

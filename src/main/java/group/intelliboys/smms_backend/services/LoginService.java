@@ -7,6 +7,7 @@ import group.intelliboys.smms_backend.models.entities.TwoFactorAuthToken;
 import group.intelliboys.smms_backend.models.entities.User;
 import group.intelliboys.smms_backend.models.forms.LoginForm;
 import group.intelliboys.smms_backend.models.results.LoginResult;
+import group.intelliboys.smms_backend.models.results.ResentOtpResult;
 import group.intelliboys.smms_backend.models.results.TwoFAVerificationResult;
 import group.intelliboys.smms_backend.models.tokens.TwoFAVerificationToken;
 import jakarta.transaction.Transactional;
@@ -17,7 +18,6 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.UUID;
 
 @Service
@@ -69,6 +69,7 @@ public class LoginService {
                             .build();
 
                     twoFactorAuthService.saveTwoFactorAuthToken(twoFactorAuthToken);
+                    otpService.sendEmailOtp(user.getEmail(), emailOtp);
 
                     return LoginResult.builder()
                             .formId(formId)
@@ -116,60 +117,84 @@ public class LoginService {
 
         if (twoFactorAuthToken != null) {
             if (twoFactorAuthToken.getStatus().equals("UNVERIFIED")) {
-                String hashedEmailOtp = twoFactorAuthToken.getHashedEmailOtp();
-                String hashedSmsOtp = twoFactorAuthToken.getHashedSmsOtp();
-                String emailOtp = twoFAVerificationToken.getEmailOtp();
-                String smsOtp = twoFAVerificationToken.getSmsOtp();
+                if (twoFactorAuthToken.getAttempts() >= 0 && twoFactorAuthToken.getAttempts() < 3) {
+                    String hashedEmailOtp = twoFactorAuthToken.getHashedEmailOtp();
+                    String hashedSmsOtp = twoFactorAuthToken.getHashedSmsOtp();
+                    String emailOtp = twoFAVerificationToken.getEmailOtp();
+                    String smsOtp = twoFAVerificationToken.getSmsOtp();
 
-                boolean isEmailOtpMatches = false, isSmsOtpMatches = false;
+                    boolean isEmailOtpMatches = false, isSmsOtpMatches = false;
 
-                PasswordEncoder encoder = new BCryptPasswordEncoder();
+                    PasswordEncoder encoder = new BCryptPasswordEncoder();
 
-                if (encoder.matches(emailOtp, hashedEmailOtp)) {
-                    isEmailOtpMatches = true;
-                }
+                    if (encoder.matches(emailOtp, hashedEmailOtp)) {
+                        isEmailOtpMatches = true;
+                    }
 
-                if (encoder.matches(smsOtp, hashedSmsOtp)) {
-                    isSmsOtpMatches = true;
-                }
+                    if (encoder.matches(smsOtp, hashedSmsOtp)) {
+                        isSmsOtpMatches = true;
+                    }
 
-                if (isEmailOtpMatches && isSmsOtpMatches) {
-                    User user = twoFactorAuthToken.getUser();
-                    UserAuthInfo userAuthInfo = userService.getUserAuthInfoByEmail(user.getEmail());
+                    if (isEmailOtpMatches && isSmsOtpMatches) {
+                        User user = twoFactorAuthToken.getUser();
+                        UserAuthInfo userAuthInfo = userService.getUserAuthInfoByEmail(user.getEmail());
 
-                    String jwt = jwtService.generateToken(userAuthInfo);
-                    User userRef = userService.getUserReferenceByEmail(user.getEmail());
+                        String jwt = jwtService.generateToken(userAuthInfo);
+                        User userRef = userService.getUserReferenceByEmail(user.getEmail());
 
-                    Token token = Token.builder()
-                            .value(jwt)
-                            .deviceId(twoFactorAuthToken.getDeviceId())
-                            .deviceName(twoFactorAuthToken.getDeviceName())
-                            .user(userRef)
-                            .build();
+                        Token token = Token.builder()
+                                .value(jwt)
+                                .deviceId(twoFactorAuthToken.getDeviceId())
+                                .deviceName(twoFactorAuthToken.getDeviceName())
+                                .user(userRef)
+                                .build();
 
-                    tokenService.saveToken(token);
-                    twoFactorAuthService.updateStatus("VERIFIED", twoFactorAuthToken.getFormId());
+                        tokenService.saveToken(token);
+                        twoFactorAuthService.updateStatus("VERIFIED", twoFactorAuthToken.getFormId());
 
-                    return TwoFAVerificationResult.builder()
-                            .formId(twoFactorAuthToken.getFormId())
-                            .status("VERIFIED")
-                            .message("Verification Success!")
-                            .token(jwt)
-                            .isEmailOtpMatches(isEmailOtpMatches)
-                            .isSmsOtpMatches(isSmsOtpMatches)
-                            .build();
+                        return TwoFAVerificationResult.builder()
+                                .formId(twoFactorAuthToken.getFormId())
+                                .status("VERIFIED")
+                                .message("Verification Success!")
+                                .token(jwt)
+                                .isEmailOtpMatches(isEmailOtpMatches)
+                                .isSmsOtpMatches(isSmsOtpMatches)
+                                .build();
+                    } else {
+                        byte attempts = twoFactorAuthToken.getAttempts();
+                        attempts++;
+                        twoFactorAuthToken.setAttempts(attempts);
+                        twoFactorAuthService.saveTwoFactorAuthToken(twoFactorAuthToken);
+
+                        return TwoFAVerificationResult.builder()
+                                .formId(twoFactorAuthToken.getFormId())
+                                .status("WRONG_OTP")
+                                .message("Wrong Otp!")
+                                .isEmailOtpMatches(isEmailOtpMatches)
+                                .isSmsOtpMatches(isSmsOtpMatches)
+                                .build();
+                    }
                 } else {
-                    byte attempts = twoFactorAuthToken.getAttempts();
-                    attempts++;
-                    twoFactorAuthToken.setAttempts(attempts);
-                    twoFactorAuthService.saveTwoFactorAuthToken(twoFactorAuthToken);
+                    // RESEND OTP
+                    String newEmailOtp = otpService.generateOtp();
+                    String newSmsOtp = otpService.generateOtp();
+
+                    log.info("New Email OTP: {}", newEmailOtp);
+                    log.info("New SMS OTP: {}", newSmsOtp);
+
+                    PasswordEncoder encoder = new BCryptPasswordEncoder();
+
+                    String newHashedEmailOtp = encoder.encode(newEmailOtp);
+                    String newHashedSmsOtp = encoder.encode(newSmsOtp);
+
+                    twoFactorAuthService.updateHashedEmailOtp(newHashedEmailOtp, twoFactorAuthToken.getFormId());
+                    twoFactorAuthService.updateHashedSmsOtp(newHashedSmsOtp, twoFactorAuthToken.getFormId());
+                    twoFactorAuthService.resetAttempts(twoFactorAuthToken.getFormId());
 
                     return TwoFAVerificationResult.builder()
-                            .formId(twoFactorAuthToken.getFormId())
-                            .status("WRONG_OTP")
-                            .message("Wrong Otp!")
-                            .isEmailOtpMatches(isEmailOtpMatches)
-                            .isSmsOtpMatches(isSmsOtpMatches)
+                            .formId(twoFAVerificationToken.getFormId())
+                            .status("ATTEMPT_LIMIT_EXCEEDS")
+                            .message("New OTP Resent!")
                             .build();
                 }
             } else if (twoFactorAuthToken.getStatus().equals("VERIFIED")) {
@@ -192,5 +217,36 @@ public class LoginService {
                     .message("2FA form does not exists!")
                     .build();
         }
+    }
+
+    public ResentOtpResult resendEmailOtp(String formId) {
+        TwoFactorAuthToken twoFactorAuthToken = twoFactorAuthService.getTwoFactorAuthTokenByFormId(formId);
+
+        if (twoFactorAuthToken != null) {
+            User user = twoFactorAuthToken.getUser();
+            String rawEmailOtp = otpService.generateOtp();
+
+            PasswordEncoder encoder = new BCryptPasswordEncoder();
+            String newHashedEmailOtp = encoder.encode(rawEmailOtp);
+
+            twoFactorAuthService.updateHashedEmailOtp(newHashedEmailOtp, formId);
+            otpService.sendEmailOtp(user.getEmail(), rawEmailOtp);
+
+            log.info("New Email Otp: {}", rawEmailOtp);
+
+            return ResentOtpResult.builder()
+                    .status("NEW_EMAIL_OTP_RESENT_SUCCESSFULLY")
+                    .message("New email otp has been resent!")
+                    .build();
+        } else {
+            return ResentOtpResult.builder()
+                    .status("2FA_VERIFICATION_FORM_NOT_EXISTS")
+                    .message("2fa verification form not found!")
+                    .build();
+        }
+    }
+
+    public ResentOtpResult resendSmsOtp(String formId) {
+        return null;
     }
 }

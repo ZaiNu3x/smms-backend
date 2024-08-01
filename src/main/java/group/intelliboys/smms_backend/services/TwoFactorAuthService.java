@@ -29,4 +29,12 @@ public class TwoFactorAuthService {
     public void updateStatus(String newStatus, String formId) {
         twoFactorAuthTokenRepository.updateStatusByFormId(newStatus, formId);
     }
+
+    public void resetAttempts(String formId) {
+        twoFactorAuthTokenRepository.resetAttempts(formId);
+    }
+
+    public boolean isExistsByFormId(String formId) {
+        return twoFactorAuthTokenRepository.existsByFormId(formId);
+    }
 }
