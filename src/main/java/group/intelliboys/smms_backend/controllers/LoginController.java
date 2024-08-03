@@ -30,13 +30,13 @@ public class LoginController {
         return new ResponseEntity<>(twoFAVerificationResult, HttpStatus.OK);
     }
 
-    @PutMapping("/2fa/resend/email-otp/{formId}")
+    @GetMapping("/2fa/resend/email-otp/{formId}")
     public ResponseEntity<ResentOtpResult> resendEmailOtp(@PathVariable("formId") String formId) {
         ResentOtpResult resentOtpResult = loginService.resendEmailOtp(formId);
         return new ResponseEntity<>(resentOtpResult, HttpStatus.OK);
     }
 
-    @PutMapping("/2fa/resend/sms-otp/{formId}")
+    @GetMapping("/2fa/resend/sms-otp/{formId}")
     public ResponseEntity<ResentOtpResult> resendSmsOtp(@PathVariable("formId") String formId) {
         ResentOtpResult resentOtpResult = loginService.resendSmsOtp(formId);
         return new ResponseEntity<>(resentOtpResult, HttpStatus.OK);

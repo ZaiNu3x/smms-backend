@@ -32,8 +32,8 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(HttpMethod.POST,"/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/login/2fa/verify").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/login/2fa/resend/email-otp/**").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/login/2fa/resend/sms-otp/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/login/2fa/resend/email-otp/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/login/2fa/resend/sms-otp/**").permitAll()
                 // =====================================================================
                         .anyRequest()
                         .authenticated())

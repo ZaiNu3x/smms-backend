@@ -42,7 +42,7 @@ public class OtpService {
     }
 
     @Async
-    public String sendSmsOtp() {
-        return generateOtp();
+    public void sendSmsOtp(String phoneNumber, String otp) {
+
     }
 }

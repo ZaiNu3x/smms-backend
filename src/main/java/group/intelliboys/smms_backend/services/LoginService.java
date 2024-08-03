@@ -18,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.util.UUID;
 
 @Service
@@ -223,21 +224,28 @@ public class LoginService {
         TwoFactorAuthToken twoFactorAuthToken = twoFactorAuthService.getTwoFactorAuthTokenByFormId(formId);
 
         if (twoFactorAuthToken != null) {
-            User user = twoFactorAuthToken.getUser();
-            String rawEmailOtp = otpService.generateOtp();
+            if (twoFactorAuthToken.getStatus().equals("UNVERIFIED")) {
+                User user = twoFactorAuthToken.getUser();
+                String rawEmailOtp = otpService.generateOtp();
 
-            PasswordEncoder encoder = new BCryptPasswordEncoder();
-            String newHashedEmailOtp = encoder.encode(rawEmailOtp);
+                PasswordEncoder encoder = new BCryptPasswordEncoder();
+                String newHashedEmailOtp = encoder.encode(rawEmailOtp);
 
-            twoFactorAuthService.updateHashedEmailOtp(newHashedEmailOtp, formId);
-            otpService.sendEmailOtp(user.getEmail(), rawEmailOtp);
+                twoFactorAuthService.updateHashedEmailOtp(newHashedEmailOtp, formId);
+                otpService.sendEmailOtp(user.getEmail(), rawEmailOtp);
 
-            log.info("New Email Otp: {}", rawEmailOtp);
+                log.info("New Email Otp: {}", rawEmailOtp);
 
-            return ResentOtpResult.builder()
-                    .status("NEW_EMAIL_OTP_RESENT_SUCCESSFULLY")
-                    .message("New email otp has been resent!")
-                    .build();
+                return ResentOtpResult.builder()
+                        .status("NEW_EMAIL_OTP_RESENT_SUCCESSFULLY")
+                        .message("New email otp has been resent!")
+                        .build();
+            } else {
+                return ResentOtpResult.builder()
+                        .status("2FA_VERIFICATION_FORM_ALREADY_VERIFIED")
+                        .message("2fa verification form already verified!")
+                        .build();
+            }
         } else {
             return ResentOtpResult.builder()
                     .status("2FA_VERIFICATION_FORM_NOT_EXISTS")
@@ -247,6 +255,36 @@ public class LoginService {
     }
 
     public ResentOtpResult resendSmsOtp(String formId) {
-        return null;
+        TwoFactorAuthToken twoFactorAuthToken = twoFactorAuthService.getTwoFactorAuthTokenByFormId(formId);
+
+        if (twoFactorAuthToken != null) {
+            if (twoFactorAuthToken.getStatus().equals("UNVERIFIED")) {
+                User user = twoFactorAuthToken.getUser();
+                String rawSmsOtp = otpService.generateOtp();
+
+                PasswordEncoder encoder = new BCryptPasswordEncoder();
+                String newHashedSmsOtp = encoder.encode(rawSmsOtp);
+
+                twoFactorAuthService.updateHashedEmailOtp(newHashedSmsOtp, formId);
+                //otpService.sendSmsOtp(user.getEmail(), rawSmsOtp);
+
+                log.info("New SMS Otp: {}", rawSmsOtp);
+
+                return ResentOtpResult.builder()
+                        .status("NEW_SMS_OTP_RESENT_SUCCESSFULLY")
+                        .message("New sms otp has been resent!")
+                        .build();
+            } else {
+                return ResentOtpResult.builder()
+                        .status("2FA_VERIFICATION_FORM_ALREADY_VERIFIED")
+                        .message("2fa verification form already verified!")
+                        .build();
+            }
+        } else {
+            return ResentOtpResult.builder()
+                    .status("2FA_VERIFICATION_FORM_NOT_EXISTS")
+                    .message("2fa verification form not found!")
+                    .build();
+        }
     }
 }
