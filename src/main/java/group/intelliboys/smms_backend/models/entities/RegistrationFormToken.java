@@ -15,7 +15,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "registration_form_token")
+@Table(name = "registration_form_token",
+        indexes = {@Index(name = "idx_email", columnList = "email")})
 public class RegistrationFormToken {
     @Id
     @Column(length = 36)
@@ -57,11 +58,14 @@ public class RegistrationFormToken {
     @Column(length = 4096)
     private byte[] profilePic;
 
+    @Column(nullable = false, length = 13)
+    private String phoneNumber;
+
     @Column(nullable = false, length = 72)
     private String hashedEmailVerificationOtp;
 
     @Column(nullable = false, length = 72)
-    private String hashedPhoneNumberVerificationOtp;
+    private String hashedSmsVerificationOtp;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

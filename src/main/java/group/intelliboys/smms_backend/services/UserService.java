@@ -29,4 +29,8 @@ public class UserService {
     public boolean isPhoneNumberAlreadyRegistered(String phoneNumber) {
         return userRepository.existsByPhoneNumber(phoneNumber);
     }
+
+    public void saveUser(User user) {
+        userRepository.save(user);
+    }
 }

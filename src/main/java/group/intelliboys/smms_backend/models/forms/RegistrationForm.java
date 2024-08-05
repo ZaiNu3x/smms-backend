@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Builder
 public class RegistrationForm {
+    private String formId;
     private String email;
     private String password;
     private String confirmPassword;

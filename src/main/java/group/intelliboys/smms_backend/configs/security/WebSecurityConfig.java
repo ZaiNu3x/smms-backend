@@ -37,9 +37,9 @@ public class WebSecurityConfig {
                 // =====================================================================
 
                 // ============================ REGISTRATION URL'S ============================
-                        .requestMatchers(HttpMethod.POST, "/register").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/register/is-account-exists?").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/register/is-account-exists").permitAll()
                         .requestMatchers(HttpMethod.POST, "/register/submit").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/register/verify").permitAll()
                 // ============================================================================
                         .anyRequest()
                         .authenticated())
