@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
 import java.util.Optional;
 
 @Repository
@@ -19,4 +20,8 @@ public interface UserRepository extends JpaRepository<User, String> {
     void updatePassword(String newHashedPassword, String email);
 
     User getReferenceByEmail(String email);
+
+    boolean existsByEmail(String email);
+
+    boolean existsByPhoneNumber(String email);
 }

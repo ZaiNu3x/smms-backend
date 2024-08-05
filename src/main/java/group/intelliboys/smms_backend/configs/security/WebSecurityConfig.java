@@ -35,6 +35,12 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/login/2fa/resend/email-otp/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/login/2fa/resend/sms-otp/**").permitAll()
                 // =====================================================================
+
+                // ============================ REGISTRATION URL'S ============================
+                        .requestMatchers(HttpMethod.POST, "/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/register/is-account-exists?").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/register/submit").permitAll()
+                // ============================================================================
                         .anyRequest()
                         .authenticated())
                 .sessionManagement(session -> session

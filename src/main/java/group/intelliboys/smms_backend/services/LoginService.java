@@ -265,7 +265,7 @@ public class LoginService {
                 PasswordEncoder encoder = new BCryptPasswordEncoder();
                 String newHashedSmsOtp = encoder.encode(rawSmsOtp);
 
-                twoFactorAuthService.updateHashedEmailOtp(newHashedSmsOtp, formId);
+                twoFactorAuthService.updateHashedSmsOtp(newHashedSmsOtp, formId);
                 //otpService.sendSmsOtp(user.getEmail(), rawSmsOtp);
 
                 log.info("New SMS Otp: {}", rawSmsOtp);

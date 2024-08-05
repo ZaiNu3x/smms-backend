@@ -21,4 +21,12 @@ public class UserService {
     public User getUserReferenceByEmail(String email) {
         return userRepository.getReferenceByEmail(email);
     }
+
+    public boolean isEmailAlreadyRegistered(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    public boolean isPhoneNumberAlreadyRegistered(String phoneNumber) {
+        return userRepository.existsByPhoneNumber(phoneNumber);
+    }
 }
