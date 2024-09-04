@@ -3,6 +3,7 @@ package group.intelliboys.smms_backend.controllers;
 import group.intelliboys.smms_backend.models.forms.RegistrationForm;
 import group.intelliboys.smms_backend.models.forms.UserAuthForm;
 import group.intelliboys.smms_backend.models.results.RegistrationResult;
+import group.intelliboys.smms_backend.models.results.ResentOtpResult;
 import group.intelliboys.smms_backend.models.results.TwoFAVerificationResult;
 import group.intelliboys.smms_backend.models.tokens.TwoFAVerificationToken;
 import group.intelliboys.smms_backend.services.RegistrationService;
@@ -10,10 +11,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/register")
@@ -45,5 +43,17 @@ public class RegistrationController {
     public ResponseEntity<TwoFAVerificationResult> verifyRegistration(@RequestBody @Valid TwoFAVerificationToken token) {
         TwoFAVerificationResult result = registrationService.verifyRegistration(token);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/resend/email-otp/{formId}")
+    public ResponseEntity<ResentOtpResult> resendEmailOtp(@PathVariable("formId") String formId) {
+        ResentOtpResult resentOtpResult = registrationService.resendEmailOtp(formId);
+        return new ResponseEntity<>(resentOtpResult, HttpStatus.OK);
+    }
+
+    @GetMapping("/resend/sms-otp/{formId}")
+    public ResponseEntity<ResentOtpResult> resendSmsOtp(@PathVariable("formId") String formId) {
+        ResentOtpResult resentOtpResult = registrationService.resendSmsOtp(formId);
+        return new ResponseEntity<>(resentOtpResult, HttpStatus.OK);
     }
 }

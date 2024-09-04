@@ -40,6 +40,8 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/register/is-account-exists").permitAll()
                         .requestMatchers(HttpMethod.POST, "/register/submit").permitAll()
                         .requestMatchers(HttpMethod.POST, "/register/verify").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/register/resend/email-otp/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/register/resend/sms-otp/**").permitAll()
                 // ============================================================================
                         .anyRequest()
                         .authenticated())

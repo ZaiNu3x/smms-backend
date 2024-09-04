@@ -26,4 +26,16 @@ public class RegistrationFormTokenService {
     public void saveRegistrationFormToken(RegistrationFormToken registrationFormToken) {
         registrationFormTokenRepository.save(registrationFormToken);
     }
+
+    public void updateHashedEmailOtp(String newOtp, String formId) {
+        registrationFormTokenRepository.updateHashedEmailOtp(newOtp, formId);
+    }
+
+    public void updateHashedSmsOtp(String newOtp, String formId) {
+        registrationFormTokenRepository.updateHashedSmsOtp(newOtp, formId);
+    }
+
+    public void deleteRegistrationFormById(String formId) {
+        registrationFormTokenRepository.deleteById(formId);
+    }
 }

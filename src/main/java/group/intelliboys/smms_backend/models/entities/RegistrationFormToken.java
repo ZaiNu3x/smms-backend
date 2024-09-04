@@ -22,7 +22,7 @@ public class RegistrationFormToken {
     @Column(length = 36)
     private String id;
 
-    @Column(nullable = false, length = 64, unique = true)
+    @Column(nullable = false, length = 64)
     private String email;
 
     @Column(nullable = false, length = 72)
@@ -66,6 +66,9 @@ public class RegistrationFormToken {
 
     @Column(nullable = false, length = 72)
     private String hashedSmsVerificationOtp;
+
+    @Column(nullable = false)
+    private boolean isVerified;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

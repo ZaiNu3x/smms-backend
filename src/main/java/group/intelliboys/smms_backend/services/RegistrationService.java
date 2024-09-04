@@ -7,8 +7,10 @@ import group.intelliboys.smms_backend.models.enums.Role;
 import group.intelliboys.smms_backend.models.forms.RegistrationForm;
 import group.intelliboys.smms_backend.models.forms.UserAuthForm;
 import group.intelliboys.smms_backend.models.results.RegistrationResult;
+import group.intelliboys.smms_backend.models.results.ResentOtpResult;
 import group.intelliboys.smms_backend.models.results.TwoFAVerificationResult;
 import group.intelliboys.smms_backend.models.tokens.TwoFAVerificationToken;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ import java.time.Period;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class RegistrationService {
     private static final Logger log = LoggerFactory.getLogger(RegistrationService.class);
 
@@ -113,8 +116,8 @@ public class RegistrationService {
                     .formId(formId)
                     .message("Email or Phone number are already exists!")
                     .status("EMAIL_PHONE_NUMBER_EXISTS")
-                    .isEmailExists(true)
-                    .isPhoneNumberExists(true)
+                    .isEmailExists(isEmailAlreadyExists)
+                    .isPhoneNumberExists(isPhoneNumberAlreadyExists)
                     .build();
         }
     }
@@ -146,6 +149,8 @@ public class RegistrationService {
 
                 userService.saveUser(user);
 
+                registrationFormTokenService.deleteRegistrationFormById(formToken.getId());
+
                 return TwoFAVerificationResult.builder()
                         .formId(formToken.getId())
                         .message("Registration Verified!")
@@ -167,6 +172,68 @@ public class RegistrationService {
             return TwoFAVerificationResult.builder()
                     .formId(token.getFormId())
                     .message("Registration Form not found!")
+                    .status("REGISTRATION_FORM_NOT_FOUND")
+                    .build();
+        }
+    }
+
+    public ResentOtpResult resendEmailOtp(String formId) {
+        RegistrationFormToken formToken = registrationFormTokenService.getRegistrationFormTokenById(formId);
+
+        if (formToken != null) {
+            if (!formToken.isVerified()) {
+                String newRawEmailOtp = otpService.generateOtp();
+                log.info("New Email OTP: {}", newRawEmailOtp);
+                PasswordEncoder encoder = new BCryptPasswordEncoder();
+                String newHashedEmailOtp = encoder.encode(newRawEmailOtp);
+                registrationFormTokenService.updateHashedEmailOtp(newHashedEmailOtp, formId);
+                otpService.sendEmailOtp(formToken.getEmail(), newRawEmailOtp);
+
+                return ResentOtpResult.builder()
+                        .message("New Email Otp has been sent!")
+                        .status("NEW_EMAIL_OTP_SENT")
+                        .build();
+            } else {
+                return ResentOtpResult.builder()
+                        .message("Registration Form has been already verified!")
+                        .status("REGISTRATION_FORM_ALREADY_VERIFIED")
+                        .build();
+            }
+
+        } else {
+            return ResentOtpResult.builder()
+                    .message("No Registration Form has found!")
+                    .status("REGISTRATION_FORM_NOT_FOUND")
+                    .build();
+        }
+    }
+
+    public ResentOtpResult resendSmsOtp(String formId) {
+        RegistrationFormToken formToken = registrationFormTokenService.getRegistrationFormTokenById(formId);
+
+        if (formToken != null) {
+            if (!formToken.isVerified()) {
+                String newRawSmsOtp = otpService.generateOtp();
+                log.info("New Email OTP: {}", newRawSmsOtp);
+                PasswordEncoder encoder = new BCryptPasswordEncoder();
+                String newHashedSmsOtp = encoder.encode(newRawSmsOtp);
+                registrationFormTokenService.updateHashedSmsOtp(newHashedSmsOtp, formId);
+                otpService.sendSmsOtp(formToken.getEmail(), newRawSmsOtp);
+
+                return ResentOtpResult.builder()
+                        .message("New Email Otp has been sent!")
+                        .status("NEW_EMAIL_OTP_SENT")
+                        .build();
+            } else {
+                return ResentOtpResult.builder()
+                        .message("Registration Form has been already verified!")
+                        .status("REGISTRATION_FORM_ALREADY_VERIFIED")
+                        .build();
+            }
+
+        } else {
+            return ResentOtpResult.builder()
+                    .message("No Registration Form has found!")
                     .status("REGISTRATION_FORM_NOT_FOUND")
                     .build();
         }
