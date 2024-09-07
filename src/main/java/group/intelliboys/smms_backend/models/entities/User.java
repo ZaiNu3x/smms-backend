@@ -56,7 +56,7 @@ public class User {
     @Column(nullable = false)
     private String address;
 
-    @Column(length = 4096)
+    @Column(length = 2_048_000)
     private byte[] profilePic;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY,

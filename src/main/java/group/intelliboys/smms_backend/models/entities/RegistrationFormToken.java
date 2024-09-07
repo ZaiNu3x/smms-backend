@@ -55,7 +55,7 @@ public class RegistrationFormToken {
     @Column(nullable = false)
     private String address;
 
-    @Column(length = 4096)
+    @Column(length = 2_048_000)
     private byte[] profilePic;
 
     @Column(nullable = false, length = 13)

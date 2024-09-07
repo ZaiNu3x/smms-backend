@@ -168,7 +168,6 @@ public class RegistrationService {
                         .build();
             }
         } else {
-
             return TwoFAVerificationResult.builder()
                     .formId(token.getFormId())
                     .message("Registration Form not found!")

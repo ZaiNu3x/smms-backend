@@ -8,11 +8,13 @@ import group.intelliboys.smms_backend.models.results.TwoFAVerificationResult;
 import group.intelliboys.smms_backend.models.tokens.TwoFAVerificationToken;
 import group.intelliboys.smms_backend.services.RegistrationService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/register")
 public class RegistrationController {
@@ -35,6 +37,7 @@ public class RegistrationController {
      **/
     @PostMapping("/submit")
     public ResponseEntity<RegistrationResult> submit(@RequestBody @Valid RegistrationForm form) {
+        log.info("Profile Size: "+String.valueOf(form.getProfilePic().length));
         RegistrationResult result = registrationService.saveRegistrationFormToken(form);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
