@@ -1,10 +1,12 @@
 package group.intelliboys.smms_backend.services;
 
 import group.intelliboys.smms_backend.models.dtos.UserAuthInfo;
+import group.intelliboys.smms_backend.models.dtos.UserProfile;
 import group.intelliboys.smms_backend.models.entities.User;
 import group.intelliboys.smms_backend.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -32,5 +34,20 @@ public class UserService {
 
     public void saveUser(User user) {
         userRepository.save(user);
+    }
+
+    public UserProfile getUserProfileInfo() {
+        boolean isLoggedIn = SecurityContextHolder.getContext().getAuthentication().isAuthenticated();
+
+        if (isLoggedIn) {
+            String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
+
+            UserProfile userProfile = userRepository.getUserProfileInfo(loggedInUser)
+                    .orElse(null);
+
+            return userProfile;
+        } else {
+            return null;
+        }
     }
 }
