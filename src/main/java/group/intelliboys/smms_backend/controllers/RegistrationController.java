@@ -37,7 +37,6 @@ public class RegistrationController {
      **/
     @PostMapping("/submit")
     public ResponseEntity<RegistrationResult> submit(@RequestBody @Valid RegistrationForm form) {
-        log.info("Profile Size: "+String.valueOf(form.getProfilePic().length));
         RegistrationResult result = registrationService.saveRegistrationFormToken(form);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

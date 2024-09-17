@@ -34,16 +34,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
-        String authHeader = request.getHeader("Authorization");
+        String authorization = request.getHeader("Authorization");
         String deviceId = request.getHeader("Device-ID");
         String deviceName = request.getHeader("Device-Name");
 
-        if (authHeader == null || SecurityContextHolder.getContext().getAuthentication() != null) {
+        logger.info(authorization);
+        logger.info(deviceId);
+        logger.info(deviceName);
+
+        if (authorization == null || SecurityContextHolder.getContext().getAuthentication() != null) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String jwt = Objects.requireNonNull(authHeader).substring(7);
+        String jwt = Objects.requireNonNull(authorization).substring(7);
         Token fetchedToken = tokenService.getTokenByValue(jwt);
 
         if (fetchedToken != null) {
