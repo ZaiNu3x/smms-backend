@@ -20,6 +20,8 @@ public interface UserRepository extends JpaRepository<User, String> {
     @Query("UPDATE User u SET u.password = ?1 WHERE u.email = ?2")
     void updatePassword(String newHashedPassword, String email);
 
+    String findPasswordByEmail(String email);
+
     @Query("SELECT new group.intelliboys.smms_backend.models.dtos.UserProfile (u.email, u.phoneNumber, u.lastName, " +
             "u.firstName, u.middleName, u.sex, u.birthDate, u.age, u.address, u.profilePic) FROM User u WHERE u.email = ?1")
     Optional<UserProfile> getUserProfileInfo(String email);

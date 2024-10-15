@@ -30,19 +30,23 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 // ============================ LOGIN URL'S ============================
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers(HttpMethod.POST,"/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/login/2fa/verify").permitAll()
                         .requestMatchers(HttpMethod.GET, "/login/2fa/resend/email-otp/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/login/2fa/resend/sms-otp/**").permitAll()
-                // =====================================================================
+                        // =====================================================================
 
-                // ============================ REGISTRATION URL'S ============================
+                        // ============================ REGISTRATION URL'S ============================
                         .requestMatchers(HttpMethod.POST, "/register/is-account-exists").permitAll()
                         .requestMatchers(HttpMethod.POST, "/register/submit").permitAll()
                         .requestMatchers(HttpMethod.POST, "/register/verify").permitAll()
                         .requestMatchers(HttpMethod.GET, "/register/resend/email-otp/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/register/resend/sms-otp/**").permitAll()
-                // ============================================================================
+                        // ============================================================================
+
+                        // ============================ FORGOT PASSWORD URL'S ============================
+                        .requestMatchers("GET", "/forgot-password/search-account/**").permitAll()
+                        .requestMatchers("POST", "/forgot-password/verify-otp").permitAll()
                         .anyRequest()
                         .authenticated())
                 .sessionManagement(session -> session
