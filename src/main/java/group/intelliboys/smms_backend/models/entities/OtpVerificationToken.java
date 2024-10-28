@@ -17,6 +17,8 @@ import java.time.LocalDateTime;
 public class OtpVerificationToken {
     @Id
     private String id;
+    @Column(nullable = false, length = 64)
+    private String email;
     @Column(length = 72, nullable = false)
     private String emailOtp;
     @Column(length = 72, nullable = false)

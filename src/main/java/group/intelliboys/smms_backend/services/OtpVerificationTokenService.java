@@ -44,4 +44,9 @@ public class OtpVerificationTokenService {
                     .build();
         }
     }
+
+    public OtpVerificationToken findOtpVerificationTokenById(String id) {
+        return otpVerificationTokenRepository.findById(id)
+                .orElse(null);
+    }
 }

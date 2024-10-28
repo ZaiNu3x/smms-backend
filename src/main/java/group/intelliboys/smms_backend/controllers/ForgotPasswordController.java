@@ -1,7 +1,9 @@
 package group.intelliboys.smms_backend.controllers;
 
+import group.intelliboys.smms_backend.models.results.ForgotPasswordResult;
 import group.intelliboys.smms_backend.models.results.OtpVerificationResult;
 import group.intelliboys.smms_backend.models.tokens.ChangePasswordToken;
+import group.intelliboys.smms_backend.models.tokens.ForgotPasswordToken;
 import group.intelliboys.smms_backend.services.OtpVerificationTokenService;
 import group.intelliboys.smms_backend.services.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +35,13 @@ public class ForgotPasswordController {
     public ResponseEntity<OtpVerificationResult> verifyOtp(@RequestBody ChangePasswordToken token) {
         log.info(token.toString());
         OtpVerificationResult result = otpVerificationTokenService.findOtpVerificationTokenById(token);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PostMapping("/submit")
+    public ResponseEntity<ForgotPasswordResult> submitNewPassword(@RequestBody ForgotPasswordToken token) {
+        log.info(token.toString());
+        ForgotPasswordResult result = userService.forgotUserPassword(token);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

@@ -47,6 +47,7 @@ public class WebSecurityConfig {
                         // ============================ FORGOT PASSWORD URL'S ============================
                         .requestMatchers("GET", "/forgot-password/search-account/**").permitAll()
                         .requestMatchers("POST", "/forgot-password/verify-otp").permitAll()
+                        .requestMatchers("POST", "/forgot-password/submit").permitAll()
                         .anyRequest()
                         .authenticated())
                 .sessionManagement(session -> session

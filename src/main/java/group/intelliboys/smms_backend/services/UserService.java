@@ -1,11 +1,11 @@
 package group.intelliboys.smms_backend.services;
 
-import group.intelliboys.smms_backend.exceptions.EmailNotFoundException;
 import group.intelliboys.smms_backend.models.dtos.UserAuthInfo;
 import group.intelliboys.smms_backend.models.dtos.UserProfile;
 import group.intelliboys.smms_backend.models.entities.OtpVerificationToken;
 import group.intelliboys.smms_backend.models.entities.User;
-import group.intelliboys.smms_backend.models.tokens.ChangePasswordToken;
+import group.intelliboys.smms_backend.models.results.ForgotPasswordResult;
+import group.intelliboys.smms_backend.models.tokens.ForgotPasswordToken;
 import group.intelliboys.smms_backend.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -60,6 +60,7 @@ public class UserService {
 
             OtpVerificationToken otpVerificationToken = OtpVerificationToken.builder()
                     .id(id)
+                    .email(email)
                     .emailOtp(hashedEmailOtp)
                     .smsOtp(hashedSmsOtp)
                     .build();
@@ -79,10 +80,6 @@ public class UserService {
         }
     }
 
-    public void verifyChangePasswordOtp(ChangePasswordToken token) {
-
-    }
-
     public boolean isPhoneNumberAlreadyRegistered(String phoneNumber) {
         return userRepository.existsByPhoneNumber(phoneNumber);
     }
@@ -91,18 +88,41 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void changeUserPassword(String email, String oldPassword, String newPassword) {
-        String password = userRepository.findPasswordByEmail(email);
+    public ForgotPasswordResult forgotUserPassword(ForgotPasswordToken token) {
+        log.info(token.toString());
 
-        if (password != null) {
-            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        OtpVerificationToken otpVerificationToken = otpVerificationTokenService
+                .findOtpVerificationTokenById(token.getFormId());
 
-            if (passwordEncoder.matches(oldPassword, password)) {
-                userRepository.updatePassword(passwordEncoder.encode(newPassword), email);
+        if (otpVerificationToken != null) {
+            User user = userRepository.findById(otpVerificationToken.getEmail())
+                    .orElse(null);
+
+            if (user != null) {
+                String email = user.getEmail();
+                String newPassword = token.getNewPassword();
+                String confirmNewPassword = token.getConfirmPassword();
+
+                if (confirmNewPassword.equals(newPassword)) {
+                    PasswordEncoder encoder = new BCryptPasswordEncoder();
+                    String password = encoder.encode(newPassword);
+                    userRepository.updatePassword(password, email);
+
+                    return ForgotPasswordResult.builder()
+                            .message("Password Changed successful!")
+                            .status("CHANGE_PASSWORD_SUCCESS")
+                            .build();
+                }
+
+            } else {
+                return ForgotPasswordResult.builder()
+                        .message("User not found!")
+                        .status("CHANGE_PASSWORD_FAILED")
+                        .build();
             }
-        } else {
-            throw new EmailNotFoundException(email + " not found!");
+
         }
+        return null;
     }
 
     public UserProfile getUserProfileInfo() {
@@ -111,10 +131,8 @@ public class UserService {
         if (isLoggedIn) {
             String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
 
-            UserProfile userProfile = userRepository.getUserProfileInfo(loggedInUser)
+            return userRepository.getUserProfileInfo(loggedInUser)
                     .orElse(null);
-
-            return userProfile;
         } else {
             return null;
         }
