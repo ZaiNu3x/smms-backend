@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Builder
 public class UserProfile {
+    private long version;
     private String email;
     private String phoneNumber;
     private String lastName;

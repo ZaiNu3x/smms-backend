@@ -22,7 +22,7 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     String findPasswordByEmail(String email);
 
-    @Query("SELECT new group.intelliboys.smms_backend.models.dtos.UserProfile (u.email, u.phoneNumber, u.lastName, " +
+    @Query("SELECT new group.intelliboys.smms_backend.models.dtos.UserProfile (u.version, u.email, u.phoneNumber, u.lastName, " +
             "u.firstName, u.middleName, u.sex, u.birthDate, u.age, u.address, u.profilePic) FROM User u WHERE u.email = ?1")
     Optional<UserProfile> getUserProfileInfo(String email);
 

@@ -19,6 +19,9 @@ import java.util.List;
 @Entity
 @Table(name = "user")
 public class User {
+    @Column(nullable = false)
+    private long version;
+
     @Id
     @Column(length = 64)
     private String email;
@@ -65,6 +68,9 @@ public class User {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<TwoFactorAuthToken> twoFactorAuthTokens;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<TravelHistory> travelHistories;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
