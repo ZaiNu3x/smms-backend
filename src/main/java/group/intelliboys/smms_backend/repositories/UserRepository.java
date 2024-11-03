@@ -1,5 +1,6 @@
 package group.intelliboys.smms_backend.repositories;
 
+import group.intelliboys.smms_backend.models.dtos.AccountVersion;
 import group.intelliboys.smms_backend.models.dtos.UserAuthInfo;
 import group.intelliboys.smms_backend.models.dtos.UserProfile;
 import group.intelliboys.smms_backend.models.entities.User;
@@ -31,4 +32,6 @@ public interface UserRepository extends JpaRepository<User, String> {
     boolean existsByEmail(String email);
 
     boolean existsByPhoneNumber(String email);
+
+    AccountVersion findByEmail(String email);
 }

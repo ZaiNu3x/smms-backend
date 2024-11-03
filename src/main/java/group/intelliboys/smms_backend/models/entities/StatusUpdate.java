@@ -1,8 +1,10 @@
 package group.intelliboys.smms_backend.models.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
@@ -37,6 +39,8 @@ public class StatusUpdate {
 
     @ManyToOne
     @JoinColumn(name = "travel_history_id")
+    @JsonIgnore
+    @ToString.Exclude
     private TravelHistory travelHistory;
 
     @Column(nullable = false)

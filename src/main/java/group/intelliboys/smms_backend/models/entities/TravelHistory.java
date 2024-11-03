@@ -1,13 +1,16 @@
 package group.intelliboys.smms_backend.models.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Entity
 @Table(name = "travel_history")
@@ -18,9 +21,11 @@ public class TravelHistory {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
+    @ToString.Exclude
     private User user;
 
-    @OneToMany(mappedBy = "travelHistory", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "travelHistory", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<StatusUpdate> statusUpdates;
 
     @Column(nullable = false)

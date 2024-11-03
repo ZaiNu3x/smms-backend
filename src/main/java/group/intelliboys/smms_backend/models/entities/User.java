@@ -1,11 +1,13 @@
 package group.intelliboys.smms_backend.models.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import group.intelliboys.smms_backend.models.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,7 +19,9 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Entity
+@DynamicUpdate
 @Table(name = "user")
+@JsonIgnoreProperties({"tokens", "twoFactorAuthTokens"})
 public class User {
     @Column(nullable = false)
     private long version;
@@ -62,14 +66,13 @@ public class User {
     @Column(length = 2_048_000)
     private byte[] profilePic;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY,
-            cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Token> tokens;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<TwoFactorAuthToken> twoFactorAuthTokens;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<TravelHistory> travelHistories;
 
     @Column(nullable = false, updatable = false)
