@@ -142,7 +142,6 @@ public class UserService {
 
     public User synchronizedUserData(User user) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        log.info(user.toString());
         User currentUser = userRepository.findById(email)
                 .orElse(null);
 

@@ -32,7 +32,6 @@ public class UserController {
 
     @PostMapping("/sync")
     public ResponseEntity<?> synchronizedUserData(@RequestBody User user) {
-        log.info(user.toString());
         User result = userService.synchronizedUserData(user);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
