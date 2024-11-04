@@ -189,7 +189,7 @@ public class UserService {
                 }
 
                 userRepository.save(currentUser);
-            } else if (user.getVersion() < currentUser.getVersion()) {
+            } else if (user.getVersion() <= currentUser.getVersion()) {
                 return userRepository.findById(email).orElse(null);
             }
         }
