@@ -38,10 +38,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String deviceId = request.getHeader("Device-ID");
         String deviceName = request.getHeader("Device-Name");
 
-        logger.info(authorization);
-        logger.info(deviceId);
-        logger.info(deviceName);
-
         if (authorization == null || SecurityContextHolder.getContext().getAuthentication() != null) {
             filterChain.doFilter(request, response);
             return;

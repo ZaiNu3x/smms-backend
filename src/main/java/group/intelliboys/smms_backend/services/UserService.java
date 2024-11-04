@@ -1,6 +1,5 @@
 package group.intelliboys.smms_backend.services;
 
-import group.intelliboys.smms_backend.models.dtos.AccountVersion;
 import group.intelliboys.smms_backend.models.dtos.UserAuthInfo;
 import group.intelliboys.smms_backend.models.dtos.UserProfile;
 import group.intelliboys.smms_backend.models.entities.OtpVerificationToken;
@@ -16,7 +15,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -138,67 +136,5 @@ public class UserService {
         } else {
             return null;
         }
-    }
-
-    public User synchronizedUserData(User user) {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User currentUser = userRepository.findById(email)
-                .orElse(null);
-
-        if (currentUser != null) {
-            if (user.getVersion() > currentUser.getVersion()) {
-
-                if (currentUser.getVersion() != user.getVersion()) {
-                    currentUser.setVersion(user.getVersion());
-                }
-
-                if (!currentUser.getLastName().equals(user.getLastName())) {
-                    currentUser.setLastName(user.getLastName());
-                }
-
-                if (!currentUser.getFirstName().equals(user.getFirstName())) {
-                    currentUser.setFirstName(user.getFirstName());
-                }
-
-                if (!currentUser.getMiddleName().equals(user.getMiddleName())) {
-                    currentUser.setMiddleName(user.getMiddleName());
-                }
-
-                if (currentUser.getSex() != user.getSex()) {
-                    currentUser.setSex(user.getSex());
-                }
-
-                if (!currentUser.getBirthDate().equals(user.getBirthDate())) {
-                    currentUser.setBirthDate(user.getBirthDate());
-                }
-
-                if (!Arrays.equals(currentUser.getProfilePic(), user.getProfilePic())) {
-                    currentUser.setProfilePic(user.getProfilePic());
-                }
-
-                if (!currentUser.getAddress().equals(user.getAddress())) {
-                    currentUser.setAddress(user.getAddress());
-                }
-
-                if (!currentUser.getTravelHistories().equals(user.getTravelHistories())) {
-                    user.getTravelHistories().forEach(t -> {
-                        t.setUser(currentUser);
-                    });
-
-                    currentUser.setTravelHistories(user.getTravelHistories());
-                }
-
-                userRepository.save(currentUser);
-            } else if (user.getVersion() <= currentUser.getVersion()) {
-                return userRepository.findById(email).orElse(null);
-            }
-        }
-
-        return null;
-    }
-
-    public AccountVersion getAccountVersion() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findByEmail(email);
     }
 }
