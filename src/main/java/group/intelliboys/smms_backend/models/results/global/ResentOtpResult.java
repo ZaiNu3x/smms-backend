@@ -1,4 +1,4 @@
-package group.intelliboys.smms_backend.models.results;
+package group.intelliboys.smms_backend.models.results.global;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

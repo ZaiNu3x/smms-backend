@@ -1,7 +1,7 @@
 package group.intelliboys.smms_backend.services;
 
-import group.intelliboys.smms_backend.models.entities.TwoFactorAuthToken;
-import group.intelliboys.smms_backend.repositories.TwoFactorAuthTokenRepository;
+import group.intelliboys.smms_backend.models.entities.auth.TwoFactorAuthToken;
+import group.intelliboys.smms_backend.repositories.signin.TwoFactorAuthTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

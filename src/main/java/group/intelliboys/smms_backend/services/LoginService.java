@@ -2,13 +2,13 @@ package group.intelliboys.smms_backend.services;
 
 import group.intelliboys.smms_backend.configs.security.jwt.JwtService;
 import group.intelliboys.smms_backend.models.dtos.UserAuthInfo;
-import group.intelliboys.smms_backend.models.entities.Token;
-import group.intelliboys.smms_backend.models.entities.TwoFactorAuthToken;
-import group.intelliboys.smms_backend.models.entities.User;
+import group.intelliboys.smms_backend.models.entities.auth.Token;
+import group.intelliboys.smms_backend.models.entities.auth.TwoFactorAuthToken;
+import group.intelliboys.smms_backend.models.entities.user.User;
 import group.intelliboys.smms_backend.models.forms.LoginForm;
-import group.intelliboys.smms_backend.models.results.LoginResult;
-import group.intelliboys.smms_backend.models.results.ResentOtpResult;
-import group.intelliboys.smms_backend.models.results.TwoFAVerificationResult;
+import group.intelliboys.smms_backend.models.results.signin.LoginResult;
+import group.intelliboys.smms_backend.models.results.global.ResentOtpResult;
+import group.intelliboys.smms_backend.models.results.global.TwoFAVerificationResult;
 import group.intelliboys.smms_backend.models.tokens.TwoFAVerificationToken;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -100,7 +100,7 @@ public class LoginService {
             } else {
                 return LoginResult.builder()
                         .formId(formId)
-                        .message("Wrong Password")
+                        .message("Wrong Password!")
                         .status("AUTHENTICATION_FAILED")
                         .build();
             }

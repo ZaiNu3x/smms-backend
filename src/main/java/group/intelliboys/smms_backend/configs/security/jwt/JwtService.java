@@ -8,6 +8,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.function.Function;
 
@@ -42,7 +43,7 @@ public class JwtService {
                 .subject(authInfo.getEmail())
                 .claim("role", authInfo.getRole())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 3_600_000 * 24))
+                .expiration(new Date(System.currentTimeMillis() + (86_400_000 * 7) ))
                 .signWith(getSigninKey())
                 .compact();
     }

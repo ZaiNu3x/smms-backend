@@ -1,4 +1,4 @@
-package group.intelliboys.smms_backend.models.entities;
+package group.intelliboys.smms_backend.models.entities.signup;
 
 import group.intelliboys.smms_backend.models.enums.Role;
 import jakarta.persistence.*;

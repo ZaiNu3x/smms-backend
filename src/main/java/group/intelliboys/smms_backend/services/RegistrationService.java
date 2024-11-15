@@ -1,14 +1,14 @@
 package group.intelliboys.smms_backend.services;
 
 import group.intelliboys.smms_backend.configs.security.jwt.JwtService;
-import group.intelliboys.smms_backend.models.entities.RegistrationFormToken;
-import group.intelliboys.smms_backend.models.entities.User;
+import group.intelliboys.smms_backend.models.entities.signup.RegistrationFormToken;
+import group.intelliboys.smms_backend.models.entities.user.User;
 import group.intelliboys.smms_backend.models.enums.Role;
 import group.intelliboys.smms_backend.models.forms.RegistrationForm;
 import group.intelliboys.smms_backend.models.forms.UserAuthForm;
-import group.intelliboys.smms_backend.models.results.RegistrationResult;
-import group.intelliboys.smms_backend.models.results.ResentOtpResult;
-import group.intelliboys.smms_backend.models.results.TwoFAVerificationResult;
+import group.intelliboys.smms_backend.models.results.signup.RegistrationResult;
+import group.intelliboys.smms_backend.models.results.global.ResentOtpResult;
+import group.intelliboys.smms_backend.models.results.global.TwoFAVerificationResult;
 import group.intelliboys.smms_backend.models.tokens.TwoFAVerificationToken;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -91,7 +91,7 @@ public class RegistrationService {
             return RegistrationResult.builder()
                     .formId(form.getFormId())
                     .message("email or phone number is exists!")
-                    .status("NOT_SAME_PASSWORD")
+                    .status("EMAIL_PHONE_NUMBER_EXISTS")
                     .isEmailExists(isEmailExists)
                     .isPhoneNumberExists(isPhoneNumberExists)
                     .build();
@@ -213,15 +213,15 @@ public class RegistrationService {
         if (formToken != null) {
             if (!formToken.isVerified()) {
                 String newRawSmsOtp = otpService.generateOtp();
-                log.info("New Email OTP: {}", newRawSmsOtp);
+                log.info("New SMS OTP: {}", newRawSmsOtp);
                 PasswordEncoder encoder = new BCryptPasswordEncoder();
                 String newHashedSmsOtp = encoder.encode(newRawSmsOtp);
                 registrationFormTokenService.updateHashedSmsOtp(newHashedSmsOtp, formId);
                 otpService.sendSmsOtp(formToken.getEmail(), newRawSmsOtp);
 
                 return ResentOtpResult.builder()
-                        .message("New Email Otp has been sent!")
-                        .status("NEW_EMAIL_OTP_SENT")
+                        .message("New SMS Otp has been sent!")
+                        .status("NEW_SMS_OTP_SENT")
                         .build();
             } else {
                 return ResentOtpResult.builder()

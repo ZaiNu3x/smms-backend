@@ -1,7 +1,7 @@
 package group.intelliboys.smms_backend.services;
 
-import group.intelliboys.smms_backend.models.entities.RegistrationFormToken;
-import group.intelliboys.smms_backend.repositories.RegistrationFormTokenRepository;
+import group.intelliboys.smms_backend.models.entities.signup.RegistrationFormToken;
+import group.intelliboys.smms_backend.repositories.siginup.RegistrationFormTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

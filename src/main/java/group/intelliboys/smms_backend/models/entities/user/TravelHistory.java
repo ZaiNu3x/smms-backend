@@ -1,12 +1,12 @@
-package group.intelliboys.smms_backend.models.entities;
+package group.intelliboys.smms_backend.models.entities.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -15,18 +15,21 @@ import java.util.List;
 @Entity
 @Table(name = "travel_history")
 public class TravelHistory {
-    @Id
-    @Column(length = 36)
-    private String id;
+    @Column(nullable = false)
+    private long version;
 
-    @ManyToOne
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnore
     @ToString.Exclude
     private User user;
 
     @OneToMany(mappedBy = "travelHistory", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<StatusUpdate> statusUpdates;
+    private List<TravelStatusUpdate> travelStatusUpdates;
 
     @Column(nullable = false)
     private LocalDateTime startTime;

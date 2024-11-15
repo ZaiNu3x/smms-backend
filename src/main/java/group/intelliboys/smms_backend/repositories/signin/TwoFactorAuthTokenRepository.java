@@ -1,6 +1,6 @@
-package group.intelliboys.smms_backend.repositories;
+package group.intelliboys.smms_backend.repositories.signin;
 
-import group.intelliboys.smms_backend.models.entities.TwoFactorAuthToken;
+import group.intelliboys.smms_backend.models.entities.auth.TwoFactorAuthToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

@@ -1,7 +1,8 @@
 package group.intelliboys.smms_backend.controllers;
 
-import group.intelliboys.smms_backend.models.results.ForgotPasswordResult;
-import group.intelliboys.smms_backend.models.results.OtpVerificationResult;
+import group.intelliboys.smms_backend.models.results.forgot_password.ForgotPasswordResult;
+import group.intelliboys.smms_backend.models.results.global.OtpVerificationResult;
+import group.intelliboys.smms_backend.models.results.global.ResentOtpResult;
 import group.intelliboys.smms_backend.models.tokens.ChangePasswordToken;
 import group.intelliboys.smms_backend.models.tokens.ForgotPasswordToken;
 import group.intelliboys.smms_backend.services.OtpVerificationTokenService;
@@ -42,6 +43,18 @@ public class ForgotPasswordController {
     public ResponseEntity<ForgotPasswordResult> submitNewPassword(@RequestBody ForgotPasswordToken token) {
         log.info(token.toString());
         ForgotPasswordResult result = userService.forgotUserPassword(token);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/resend/email-otp/{formId}")
+    public ResponseEntity<ResentOtpResult> resendEmailOtp(@PathVariable("formId") String formId) {
+        ResentOtpResult result = otpVerificationTokenService.resendEmailOtp(formId);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/resend/sms-otp/{formId}")
+    public ResponseEntity<ResentOtpResult> resendSmsOtp(@PathVariable("formId") String formId) {
+        ResentOtpResult result = otpVerificationTokenService.resendSmsOtp(formId);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

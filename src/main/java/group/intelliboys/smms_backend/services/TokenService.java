@@ -1,7 +1,7 @@
 package group.intelliboys.smms_backend.services;
 
-import group.intelliboys.smms_backend.models.entities.Token;
-import group.intelliboys.smms_backend.repositories.TokenRepository;
+import group.intelliboys.smms_backend.models.entities.auth.Token;
+import group.intelliboys.smms_backend.repositories.signin.TokenRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
-package group.intelliboys.smms_backend.repositories;
+package group.intelliboys.smms_backend.repositories.siginup;
 
-import group.intelliboys.smms_backend.models.entities.RegistrationFormToken;
+import group.intelliboys.smms_backend.models.entities.signup.RegistrationFormToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

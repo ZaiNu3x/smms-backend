@@ -1,6 +1,6 @@
-package group.intelliboys.smms_backend.repositories;
+package group.intelliboys.smms_backend.repositories.signin;
 
-import group.intelliboys.smms_backend.models.entities.Token;
+import group.intelliboys.smms_backend.models.entities.auth.Token;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -3,10 +3,10 @@ package group.intelliboys.smms_backend.services;
 import group.intelliboys.smms_backend.models.dtos.UserAuthInfo;
 import group.intelliboys.smms_backend.models.dtos.UserProfile;
 import group.intelliboys.smms_backend.models.entities.OtpVerificationToken;
-import group.intelliboys.smms_backend.models.entities.User;
-import group.intelliboys.smms_backend.models.results.ForgotPasswordResult;
+import group.intelliboys.smms_backend.models.entities.user.User;
+import group.intelliboys.smms_backend.models.results.forgot_password.ForgotPasswordResult;
 import group.intelliboys.smms_backend.models.tokens.ForgotPasswordToken;
-import group.intelliboys.smms_backend.repositories.UserRepository;
+import group.intelliboys.smms_backend.repositories.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,7 +131,7 @@ public class UserService {
         if (isLoggedIn) {
             String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
 
-            return userRepository.getUserProfileInfo(loggedInUser)
+            return userRepository.findByEmail(loggedInUser)
                     .orElse(null);
         } else {
             return null;

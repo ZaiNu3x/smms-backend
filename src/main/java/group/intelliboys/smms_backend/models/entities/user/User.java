@@ -1,13 +1,13 @@
-package group.intelliboys.smms_backend.models.entities;
+package group.intelliboys.smms_backend.models.entities.user;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import group.intelliboys.smms_backend.models.entities.auth.Token;
+import group.intelliboys.smms_backend.models.entities.auth.TwoFactorAuthToken;
 import group.intelliboys.smms_backend.models.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -19,9 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Entity
-@DynamicUpdate
 @Table(name = "user")
-@JsonIgnoreProperties({"tokens", "twoFactorAuthTokens"})
 public class User {
     @Column(nullable = false)
     private long version;
@@ -74,6 +72,23 @@ public class User {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<TravelHistory> travelHistories;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<MonitoringWhitelist> monitoringWhitelists;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<SearchHistory> searchHistories;
+
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Settings settings;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_clubs",
+            joinColumns = @JoinColumn(name = "email_id"),
+            inverseJoinColumns = @JoinColumn(name = "club_id")
+    )
+    private List<Club> clubs;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

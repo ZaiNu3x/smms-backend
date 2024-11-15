@@ -2,9 +2,9 @@ package group.intelliboys.smms_backend.controllers;
 
 import group.intelliboys.smms_backend.models.forms.RegistrationForm;
 import group.intelliboys.smms_backend.models.forms.UserAuthForm;
-import group.intelliboys.smms_backend.models.results.RegistrationResult;
-import group.intelliboys.smms_backend.models.results.ResentOtpResult;
-import group.intelliboys.smms_backend.models.results.TwoFAVerificationResult;
+import group.intelliboys.smms_backend.models.results.global.ResentOtpResult;
+import group.intelliboys.smms_backend.models.results.global.TwoFAVerificationResult;
+import group.intelliboys.smms_backend.models.results.signup.RegistrationResult;
 import group.intelliboys.smms_backend.models.tokens.TwoFAVerificationToken;
 import group.intelliboys.smms_backend.services.RegistrationService;
 import jakarta.validation.Valid;

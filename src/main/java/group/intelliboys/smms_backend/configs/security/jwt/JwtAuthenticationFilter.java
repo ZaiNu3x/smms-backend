@@ -2,7 +2,7 @@ package group.intelliboys.smms_backend.configs.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import group.intelliboys.smms_backend.configs.security.UserDetailsServiceImpl;
-import group.intelliboys.smms_backend.models.entities.Token;
+import group.intelliboys.smms_backend.models.entities.auth.Token;
 import group.intelliboys.smms_backend.services.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

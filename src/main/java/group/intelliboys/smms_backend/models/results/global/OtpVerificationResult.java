@@ -1,4 +1,4 @@
-package group.intelliboys.smms_backend.models.results;
+package group.intelliboys.smms_backend.models.results.global;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 public class OtpVerificationResult {
     private String id;
     private String message;
-    private boolean isEmailSame;
+    private boolean isEmailOtpSame;
     private boolean isSmsOtpSame;
 }

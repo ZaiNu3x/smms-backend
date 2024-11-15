@@ -1,7 +1,7 @@
-package group.intelliboys.smms_backend.models.entities;
+package group.intelliboys.smms_backend.models.entities.auth;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import group.intelliboys.smms_backend.models.entities.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
