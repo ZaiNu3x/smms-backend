@@ -43,6 +43,6 @@ public class OtpService {
 
     @Async
     public void sendSmsOtp(String phoneNumber, String otp) {
-
+        
     }
 }

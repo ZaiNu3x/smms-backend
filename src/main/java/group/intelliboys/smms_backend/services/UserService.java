@@ -10,6 +10,7 @@ import group.intelliboys.smms_backend.repositories.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -136,5 +137,41 @@ public class UserService {
         } else {
             return null;
         }
+    }
+
+    @Modifying
+    public int updateUserProfile(UserProfile profile) {
+        User user = userRepository.getReferenceByEmail(profile.getEmail());
+
+        if (profile.getLastName() != null) {
+            user.setLastName(profile.getLastName());
+        }
+
+        if (profile.getFirstName() != null) {
+            user.setFirstName(profile.getFirstName());
+        }
+
+        if (profile.getMiddleName() != null) {
+            user.setMiddleName(profile.getMiddleName());
+        }
+
+        if (profile.getSex() != '\0') {
+            user.setSex(profile.getSex());
+        }
+
+        if (profile.getBirthDate() != null) {
+            user.setBirthDate(profile.getBirthDate());
+        }
+
+        if (profile.getAddress() != null) {
+            user.setAddress(profile.getAddress());
+        }
+
+        if (profile.getProfilePic() != null) {
+            user.setProfilePic(profile.getProfilePic());
+        }
+
+        userRepository.save(user);
+        return 1;
     }
 }

@@ -1,18 +1,16 @@
 package group.intelliboys.smms_backend.models.entities.user;
 
-import group.intelliboys.smms_backend.models.entities.auth.Token;
-import group.intelliboys.smms_backend.models.entities.auth.TwoFactorAuthToken;
 import group.intelliboys.smms_backend.models.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -20,6 +18,7 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "user")
+@DynamicUpdate
 public class User {
     @Column(nullable = false)
     private long version;
@@ -64,32 +63,6 @@ public class User {
     @Column(length = 2_048_000)
     private byte[] profilePic;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Token> tokens;
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<TwoFactorAuthToken> twoFactorAuthTokens;
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<TravelHistory> travelHistories;
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<MonitoringWhitelist> monitoringWhitelists;
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<SearchHistory> searchHistories;
-
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Settings settings;
-
-    @ManyToMany
-    @JoinTable(
-            name = "user_clubs",
-            joinColumns = @JoinColumn(name = "email_id"),
-            inverseJoinColumns = @JoinColumn(name = "club_id")
-    )
-    private List<Club> clubs;
-
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -105,6 +78,7 @@ public class User {
 
     @PreUpdate
     protected void onUpdate() {
+        age = (byte) Period.between(birthDate, LocalDate.now()).getYears();
         updatedAt = LocalDateTime.now();
     }
 }
