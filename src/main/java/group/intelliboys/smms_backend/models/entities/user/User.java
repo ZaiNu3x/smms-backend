@@ -1,5 +1,7 @@
 package group.intelliboys.smms_backend.models.entities.user;
 
+import group.intelliboys.smms_backend.models.entities.auth.Token;
+import group.intelliboys.smms_backend.models.entities.auth.TwoFactorAuthToken;
 import group.intelliboys.smms_backend.models.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,6 +13,8 @@ import org.hibernate.annotations.DynamicUpdate;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -62,6 +66,12 @@ public class User {
 
     @Column(length = 2_048_000)
     private byte[] profilePic;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Token> tokens = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TwoFactorAuthToken> twoFactorAuthTokens = new ArrayList<>();
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
