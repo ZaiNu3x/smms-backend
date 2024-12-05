@@ -50,6 +50,8 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/forgot-password/resend/sms-otp/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/forgot-password/verify-otp").permitAll()
                         .requestMatchers(HttpMethod.POST, "/forgot-password/submit").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/push/notification/accident").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/push/notification/test").permitAll()
                         .anyRequest()
                         .authenticated())
                 .sessionManagement(session -> session
